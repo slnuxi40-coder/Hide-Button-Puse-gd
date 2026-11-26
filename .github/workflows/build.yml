@@ -14,9 +14,28 @@ jobs:
 
       - name: Install Geode CLI
         run: |
-          curl -sL https://github.com/geode-sdk/cli/releases/latest/download/geode-cli-linux-x86_64.tar.gz -o geode-cli.tar.gz
-          tar -xzf geode-cli.tar.gz
-          sudo mv geode /usr/local/bin/geode
+          set -e
+          mkdir -p geode-cli-pkg
+          ASSET_URL=$(curl -sL https://api.github.com/repos/geode-sdk/cli/releases/latest \
+            | grep -oE '"browser_download_url":[[:space:]]*"[^"]+"' \
+            | cut -d'"' -f4 \
+            | grep -iE 'linux' \
+            | head -n 1)
+          echo "Downloading: $ASSET_URL"
+          curl -sL "$ASSET_URL" -o geode-cli-pkg/cli_archive
+          if file geode-cli-pkg/cli_archive | grep -qi 'gzip'; then
+            tar -xzf geode-cli-pkg/cli_archive -C geode-cli-pkg
+          elif file geode-cli-pkg/cli_archive | grep -qi 'zip'; then
+            unzip -o geode-cli-pkg/cli_archive -d geode-cli-pkg
+          else
+            chmod +x geode-cli-pkg/cli_archive
+            sudo mv geode-cli-pkg/cli_archive /usr/local/bin/geode
+          fi
+          if [ ! -f /usr/local/bin/geode ]; then
+            BIN_PATH=$(find geode-cli-pkg -name "geode" -type f | head -n 1)
+            sudo mv "$BIN_PATH" /usr/local/bin/geode
+            sudo chmod +x /usr/local/bin/geode
+          fi
           geode --version
 
       - name: Build for Android
@@ -28,4 +47,3 @@ jobs:
         with:
           name: hide-pause-button-android
           path: build/*.geode
-          
