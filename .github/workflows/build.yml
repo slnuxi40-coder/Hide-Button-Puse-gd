@@ -7,10 +7,5 @@ on:
 
 jobs:
   build:
-    name: Build Android Mod
     uses: geode-sdk/build-geode-mod/.github/workflows/build.yml@main
-    with:
-      platforms:
-        - android32
-        - android64
-        
+    
