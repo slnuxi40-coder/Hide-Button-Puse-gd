@@ -6,6 +6,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    uses: geode-sdk/build-geode-mod/.github/workflows/build.yml@main
-    
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Geode CLI
+        run: |
+          curl -sL https://github.com/geode-sdk/cli/releases/latest/download/geode-cli-linux-x86_64.tar.gz -o geode-cli.tar.gz
+          tar -xzf geode-cli.tar.gz
+          sudo mv geode /usr/local/bin/geode
+          geode --version
+
+      - name: Build for Android
+        run: |
+          geode build --platform android
+
+      - name: Upload .geode artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hide-pause-button-android
+          path: build/*.geode
+          
