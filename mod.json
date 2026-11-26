@@ -1,0 +1,11 @@
+{
+	"geode": "4.0.0",
+	"gd": {
+		"android": "2.2091"
+	},
+	"version": "v1.0.0",
+	"id": "usuario.ocultar_pausa_android",
+	"name": "Hide Pause Button (Android)",
+	"developer": "Usuario",
+	"description": "Oculta visualmente el boton de pausa en niveles en Android manteniendo su uso."
+}
